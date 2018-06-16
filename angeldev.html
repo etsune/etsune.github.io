@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>AngelDev Reader</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="ad-style.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <noscript>
+        <strong>Для работы сайта необходимо включить JavaScript.</strong>
+    </noscript>
+    <div id="app">
+        <adheader :nviewer="viewer" @chviewer="viewer = $event" @search="search($event)"></adheader>
+        <div class="ui container">
+            <adprj :prj="json" :titles="titlesj" 
+            :chapters="json"
+            :nviewer="viewer" 
+            @openreader="openReader($event)" 
+            v-if="viewer == 0"
+            :searching="searching"></adprj>
+            <reader :achapter="achapter" v-if="viewer == 1" :atitle="activetitle" @returnf="returnf"></reader>
+            <adpage v-if="viewer == 2" :chapters="chaplist" :titleinfo="activetitle" @openchapter="openchapter($event)" ></adpage>
+        </div>
+    </div>
+
+    <template id="adprj">
+        <div class="ui manga four cards">
+            <div class="ui card" v-for="title in titles" v-if="mangalist(title)" @click="$emit('openreader', title)">
+                <div class="image" style="cursor: pointer;">
+                    <img :src="title.cover">
+                </div>
+                <div class="content">
+                    <a class="header">{{ title.orig }}</a>
+                    <div class="meta">
+                        <span class="date">{{ title.ru }}</span>
+                    </div>
+                    <div class="description">{{ title.descr }}</div>
+                </div>
+                <div class="extra content">
+                    <i class="history icon"></i>{{ computeDate(title.ident) }}
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="adpage">
+        <div id="adpage-el">
+            <div class="ui segment">
+                <div class="ui items">
+                    <div class="item">
+                        <div class="small ui image">
+                            <img :src="titleinfo.cover">
+                        </div>
+                        <div class="content">
+                            <div class="ui large header">{{ titleinfo.orig }}
+                                <div class="sub header">{{ titleinfo.ru }}</div>
+                            </div>
+                            <div class="meta">
+                                <!-- <p><span><span style="font-weight: bold">Томов:</span> 7</span></p>
+                                      <p><span><span style="font-weight: bold">Автор:</span> Koyama Kariko</span></p>
+                                      <p><span><span style="font-weight: bold">Год выпуска:</span> 2011</span></p>
+                                      <p><span><span style="font-weight: bold">Описание:</span> </span></p> -->
+                            </div>
+                            <div class="description">
+                                <p>{{ titleinfo.descr }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui segment">
+                <div class="ui relaxed list">
+                    <div class="item" v-for="chapter in chapters">
+                        <div class="right floated content">
+                            {{ getdate(chapter.updated) }}
+                            <a :href="'https://vk.com/album'+chapter.owner_id+'_'+chapter.album_id" target="_blank">
+                                <i class="folder open icon"></i>
+                            </a>
+                        </div>
+                        <i class="book icon"></i>
+                        <div class="content">
+                            <a class="aheader" @click="$emit('openchapter', chapter)">{{chapter.title}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="adfooter">
+        <div class="footer">
+            <p>AngelDev</p>
+        </div>
+    </template>
+
+    <template id="ad-reader">
+        <div id="ad-reader-conta">
+            <div class="ui top attached center aligned segment">
+                <button class="ui left labeled icon basic button ch-title" @click="$emit('returnf')">
+                    <i class="left arrow icon"></i>
+                    {{achapter.title}}
+                </button>
+                <div class="inline">
+                    <button class="ui basic icon button grey nav-b" @click="changePage(active - 1,adPages)" :class="prev_dis(active)">
+                        <i class="ui icon angle double left"></i>
+                    </button>
+                    Страница
+                    <select class="pg-sel" v-model="active">
+                        <option v-for="(p,k) in adPages" :value="k">{{ k+1 }}</option>
+                    </select>
+
+                    из {{ adPages.length }}
+
+                    <button class="ui basic icon button grey nav-b" @click="changePage(active + 1,adPages)" :class="next_dis(adPages)">
+                        <i class="ui icon angle double right"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="ui bottom attached center aligned segment" @click="changePage(active + 1,adPages)">
+                <img class="ui centered image" :src="adPages[active]" alt="" :class="imagedisp">
+                <img v-for="pre in preload" :src="pre" v-show="!earlydl">
+            </div>
+        </div>
+    </template>
+
+    <template id="ad-nav">
+        <div id="nav">
+            <div class="ui menu top medium">
+                <div href="#" class="header item" @click="$emit('chviewer', 0)">
+                    <img id="logo" src="logo.png">
+                </div>
+                <a class="item" :class="{'active': nviewer == 0}" @click="$emit('chviewer', 0)">Главная</a>
+                <a class="item vk-link" href="https://vk.com/angeldevmanga" target="_blank">ВКонтакте</a>
+                <a class="item dc-link" href="https://discord.gg/XCMt7SM" target="_blank">Discord</a>
+                <div class="right menu">
+                    <div class="item">
+                        <div class="ui icon input">
+                            <input type="text" placeholder="Поиск..." v-model="searching" @keyup="$emit('search',searching)" autofocus>
+                            <i class="search icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+        $('.ui.dropdown').dropdown();
+    </script>
+</body>
+
+</html>
