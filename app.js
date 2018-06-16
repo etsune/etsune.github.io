@@ -68,7 +68,6 @@ new Vue({
         },
         search: function (sch) {
             this.searching = sch;
-            console.log(sch);
         }
     },
     created: function () {
@@ -98,7 +97,6 @@ new Vue({
                     return { 'disabled': this.active == t.length - 1 }
                 },
                 earlydl: function () {
-                    console.log(ploa)
                     var ploa = [];
                     for (let i = 1; i < 3; i++) {
                         if (this.adPages[this.active + i] != null) ploa = ploa.concat(this.adPages[this.active + i]);
@@ -150,7 +148,6 @@ new Vue({
                         }
                     });
                     var options = { year: 'numeric', month: 'long', day: 'numeric' };
-                    console.log(date);
                     return date.toLocaleDateString("ru-RU", options);
                 },
             }
@@ -165,7 +162,6 @@ new Vue({
                 getdate: function (date) {
                     var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                     var day = new Date(date);
-
                     return day.toLocaleDateString("ru-RU", options);
                 }
             }
