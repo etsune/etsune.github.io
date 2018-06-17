@@ -33,7 +33,6 @@
     display:inline-block;
 }
 .pg-sel {
-    cursor: pointer;
     width: auto;
     height: auto;
     opacity: .8;
@@ -61,4 +60,10 @@
 }
 .ch-title {
     margin-right: 10px !important;
+}
+.manga-pg {
+    cursor: pointer;
+}
+#ad-reader-conta {
+    user-select: none;
 }

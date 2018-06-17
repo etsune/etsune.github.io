@@ -1,5 +1,4 @@
-
-
+Vue.use(VueShortkey);
 
 new Vue({
     el: '#app',
@@ -151,8 +150,6 @@ new Vue({
                             return true;
                         }
                     });
-                    console.log(title)
-                    console.log(date)
                     if (date == null) return "???";
                     var options = { year: 'numeric', month: 'long', day: 'numeric' };
                     return date.toLocaleDateString("ru-RU", options);

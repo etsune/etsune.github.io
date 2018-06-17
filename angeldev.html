@@ -32,9 +32,9 @@
     </div>
 
     <template id="loader">
-            <div class="ui active dimmer">
-                    <div class="ui loader"></div>
-                  </div>
+            <div class="ui active inverted dimmer">
+                <div class="ui text loader">Загрузка</div>
+            </div>
     </template>
 
     <template id="adprj">
@@ -109,8 +109,8 @@
     </template>
 
     <template id="ad-reader">
-        <div id="ad-reader-conta">
-            <div class="ui top attached center aligned segment">
+        <div id="ad-reader-conta" v-shortkey="['arrowright']" @shortkey="changePage(active + 1,adPages)">
+            <div class="ui top attached center aligned segment" v-shortkey="['arrowleft']" @shortkey="changePage(active - 1,adPages)">
                 <button class="ui left labeled icon basic button ch-title" @click="$emit('returnf')">
                     <i class="left arrow icon"></i>
                     {{achapter.title}}
@@ -131,8 +131,8 @@
                     </button>
                 </div>
             </div>
-            <div class="ui bottom attached center aligned segment" @click="changePage(active + 1,adPages)">
-                <img class="ui centered image" :src="adPages[active]" alt="" :class="imagedisp">
+            <div class="ui bottom attached center aligned segment manga-pg-contaner" @click="changePage(active + 1,adPages)">
+                <img class="ui centered image manga-pg" :src="adPages[active]" alt="" :class="imagedisp">
                 <img v-for="pre in preload" :src="pre" v-show="!earlydl">
             </div>
         </div>
@@ -163,6 +163,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
     <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.js"></script>
+    <script src="https://unpkg.com/vue-shortkey@3.1.5/dist/index.js"></script>
     <script src="app.js"></script>
     <script>
         $('.ui.dropdown').dropdown();
