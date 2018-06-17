@@ -15,6 +15,7 @@ new Vue({
         activetitle: {},
         achapter: {},
         searching: '',
+        loader: false,
     },
     methods: {
         returnf: function () {
@@ -55,15 +56,15 @@ new Vue({
             this.viewer = 1;
         },
         loading: function () {
+            this.loader = true;
             this.$http.get(this.chaptersjs).then(function (response) {
-                this.json = response.data;
+                this.$http.get(this.titlesjs).then(function (response2) {
+                    this.json = response.data;
+                    this.titlesj = response2.data;
+                    this.loader = false;
+                }, function (error2) {
+                });
             }, function (error) {
-
-            });
-            this.$http.get(this.titlesjs).then(function (response) {
-                this.titlesj = response.data;
-            }, function (error) {
-
             });
         },
         search: function (sch) {
@@ -114,6 +115,9 @@ new Vue({
                 this.earlydl();
             }
         },
+        loader: {
+            template: '#loader',
+        },
         adheader: {
             template: '#ad-nav',
             data: function () {
@@ -140,13 +144,16 @@ new Vue({
                     return (title.orig.toLowerCase().includes(searchline) || title.ru.toLowerCase().includes(searchline));
                 },
                 computeDate: function (title) {
-                    var date = {};
+                    var date;
                     this.chapters.some(function (ch) {
                         if (ch.ident == title) {
                             date = new Date(ch.updated);
                             return true;
                         }
                     });
+                    console.log(title)
+                    console.log(date)
+                    if (date == null) return "???";
                     var options = { year: 'numeric', month: 'long', day: 'numeric' };
                     return date.toLocaleDateString("ru-RU", options);
                 },

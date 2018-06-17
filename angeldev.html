@@ -19,6 +19,7 @@
     <div id="app">
         <adheader :nviewer="viewer" @chviewer="viewer = $event" @search="search($event)"></adheader>
         <div class="ui container">
+            <loader v-if="loader"></loader>
             <adprj :prj="json" :titles="titlesj" 
             :chapters="json"
             :nviewer="viewer" 
@@ -29,6 +30,12 @@
             <adpage v-if="viewer == 2" :chapters="chaplist" :titleinfo="activetitle" @openchapter="openchapter($event)" ></adpage>
         </div>
     </div>
+
+    <template id="loader">
+            <div class="ui active dimmer">
+                    <div class="ui loader"></div>
+                  </div>
+    </template>
 
     <template id="adprj">
         <div class="ui manga four cards">
@@ -134,7 +141,7 @@
     <template id="ad-nav">
         <div id="nav">
             <div class="ui menu top medium">
-                <div href="#" class="header item" @click="$emit('chviewer', 0)">
+                <div href="#" class="header item" @click="$emit('chviewer', 0)" style="cursor: pointer;">
                     <img id="logo" src="logo.png">
                 </div>
                 <a class="item" :class="{'active': nviewer == 0}" @click="$emit('chviewer', 0)">Главная</a>
@@ -143,7 +150,7 @@
                 <div class="right menu">
                     <div class="item">
                         <div class="ui icon input">
-                            <input type="text" placeholder="Поиск..." v-model="searching" @keyup="$emit('search',searching)" autofocus>
+                            <input type="text" placeholder="Поиск..." v-model="searching" @keyup="$emit('search',searching)" @keyup.13="$emit('chviewer', 0)" autofocus>
                             <i class="search icon"></i>
                         </div>
                     </div>
